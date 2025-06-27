@@ -22,12 +22,11 @@
             display: none;
         }
         .slide-container {
-            scroll-snap-type: x mandatory;
-            overflow-x: scroll;
+            /* YATAY KAYDIRMA KALDIRILDI */
+            overflow-x: hidden; 
             overflow-y: hidden;
         }
         .slide {
-            scroll-snap-align: start;
             flex-shrink: 0;
             width: 100vw;
             height: 100vh;
@@ -77,8 +76,29 @@
 </head>
 <body class="bg-gray-900 text-white overflow-hidden">
 
+    <!-- Başlangıç Ekranı -->
+    <div id="start-overlay" class="fixed inset-0 bg-gray-900 flex flex-col items-center justify-center z-50 transition-opacity duration-500">
+        <div class="text-center">
+             <div class="mx-auto w-24 h-24 bg-[#ffb700] rounded-full flex items-center justify-center shadow-2xl mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-900" viewBox="0 0 20 20" fill="currentColor">
+                   <path fill-rule="evenodd" d="M10 20a10 10 0 100-20 10 10 0 000 20zM5.5 8.5a.5.5 0 00-1 0v3a.5.5 0 001 0v-3zM8.5 7.5a.5.5 0 01.5-.5h2a.5.5 0 010 1h-2a.5.5 0 01-.5-.5zM12 9.5a.5.5 0 00-1 0v4a.5.5 0 001 0v-4z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <h1 class="text-5xl font-bold text-white mb-4">TeknoKapsül Sunumuna Hoş Geldiniz</h1>
+            <p class="text-gray-400 text-xl mb-8">Sunumu başlatmak için butona tıklayın.</p>
+            <button id="start-presentation-btn" class="btn-primary text-gray-900 font-bold py-3 px-8 rounded-full text-lg transition-transform hover:scale-105">
+                Sunumu Başlat
+            </button>
+        </div>
+    </div>
+    
+    <!-- Geri Sayım Sayacı -->
+    <div id="timer-display" class="fixed top-4 right-4 bg-gray-800 text-white text-lg font-bold py-2 px-4 rounded-lg shadow-xl z-40" style="display: none;">
+        05:00
+    </div>
+
     <!-- Slide Container -->
-    <div id="slide-container" class="slide-container w-full h-screen flex">
+    <div id="slide-container" class="slide-container w-full h-screen flex" style="display: none;">
 
         <!-- Slide 1: Başlık (GÜNCELLENDİ) -->
         <div id="slide-1" class="slide flex items-center justify-center p-8 text-center bg-gray-900">
@@ -99,6 +119,7 @@
             </div>
         </div>
 
+        <!-- Slaytların geri kalanı... (kodun devamı aynı) -->
         <!-- Slide 2: Problem -->
         <div id="slide-2" class="slide flex flex-col items-center justify-center p-8 text-center">
             <h2 class="text-4xl md:text-5xl font-bold gradient-text mb-4 fade-in-up" style="animation-delay: 0.2s;">Gündelik Hayatın Dijital Karmaşası</h2>
@@ -250,7 +271,7 @@
     </div>
 
     <!-- Navigation -->
-    <div class="fixed bottom-0 left-0 right-0 p-4 flex justify-between items-center bg-gray-900 bg-opacity-50">
+    <div id="navigation-controls" class="fixed bottom-0 left-0 right-0 p-4 flex justify-between items-center bg-gray-900 bg-opacity-50" style="display: none;">
         <button id="prevBtn" class="btn-primary text-gray-900 font-bold py-2 px-4 rounded-full disabled:disabled-btn disabled:cursor-not-allowed transition-colors">
             &larr; Geri
         </button>
@@ -268,6 +289,12 @@
         const slideCounter = document.getElementById('slide-counter');
         const totalSlides = slides.length;
         let currentSlide = 0;
+
+        // YENİ EKLENEN ELEMANLAR
+        const startOverlay = document.getElementById('start-overlay');
+        const startPresentationBtn = document.getElementById('start-presentation-btn');
+        const timerDisplay = document.getElementById('timer-display');
+        const navigationControls = document.getElementById('navigation-controls');
 
         function updateSlide() {
             slideContainer.scrollTo({
@@ -295,6 +322,45 @@
             });
         }
 
+        function startTimer(duration, display) {
+            let timer = duration, minutes, seconds;
+            const interval = setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    clearInterval(interval);
+                    display.textContent = "Süre Doldu";
+                    display.classList.add('bg-red-500');
+                }
+            }, 1000);
+        }
+        
+        startPresentationBtn.addEventListener('click', () => {
+            startOverlay.style.opacity = '0';
+            setTimeout(() => {
+                startOverlay.style.display = 'none';
+            }, 500); // animasyon süresiyle eşleşir
+
+            // Sunumu ve kontrolleri görünür yap
+            slideContainer.style.display = 'flex';
+            navigationControls.style.display = 'flex';
+            timerDisplay.style.display = 'block';
+            
+            // Zamanlayıcıyı başlat
+            const fiveMinutes = 60 * 5;
+            startTimer(fiveMinutes, timerDisplay);
+            
+            // İlk slaydı ayarla
+            updateSlide();
+        });
+
+
         nextBtn.addEventListener('click', () => {
             if (currentSlide < totalSlides - 1) {
                 currentSlide++;
@@ -310,10 +376,13 @@
         });
         
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight') {
-                nextBtn.click();
-            } else if (e.key === 'ArrowLeft') {
-                prevBtn.click();
+            // Sadece sunum başladıysa çalış
+            if (startOverlay.style.display === 'none') {
+                 if (e.key === 'ArrowRight') {
+                    nextBtn.click();
+                } else if (e.key === 'ArrowLeft') {
+                    prevBtn.click();
+                }
             }
         });
 
@@ -338,54 +407,14 @@
 
             geminiOutput.textContent = 'Yapay zeka düşünüyor...';
             geminiButton.disabled = true;
-
-            // --- Gerçek API Çağrısı (Simülasyon) ---
-            // Bu kısım sunumda canlı demo için bir simülasyon içerir.
-            // Gerçek uygulamada, aşağıda yorum satırında bulunan kod gibi bir yapı kullanılacaktır.
             
             setTimeout(() => {
                 const mockResponse = `Elbette! 3 kişilik bir aile için, ihtiyaçlarınıza yönelik hazırladığım akıllı paket önerim:\n\n1. Konut Sigortası (Önerilen):\n   - Eşya Güvende eklentisi ile evdeki değerli eşyalarınızı da koruma altına alın.\n\n2. Tamamlayıcı Sağlık (Avantajlı):\n   - Ailedeki herkes için özel hastanelerde geçerli, geniş kapsamlı bir güvence sağlar.\n\n3. Ferdi Kaza (Önerilen):\n   - Beklenmedik durumlara karşı ek bir finansal koruma kalkanı oluşturur.\n\nBu paket, ailenizin temel ihtiyaçlarını karşılarken bütçenizi zorlamaz. Detaylı teklif için butona tıklayabilirsiniz.`;
                 geminiOutput.textContent = mockResponse;
                 geminiButton.disabled = false;
             }, 2000);
-
-
-            /*
-            // --- GERÇEK GEMINI API ÇAĞRISI KODU (UYGULAMA İÇİN) ---
-            const apiKey = ""; // API anahtarınızı buraya ekleyin
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-            
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [{ text: promptText }]
-                        }]
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`API hatası: ${response.statusText}`);
-                }
-
-                const result = await response.json();
-                const text = result.candidates[0].content.parts[0].text;
-                geminiOutput.textContent = text;
-
-            } catch (error) {
-                console.error("Gemini API hatası:", error);
-                geminiOutput.textContent = "Bir hata oluştu. Lütfen tekrar deneyin.";
-            } finally {
-                geminiButton.disabled = false;
-            }
-            */
         });
 
-
-        // Initial setup
-        updateSlide();
     </script>
 
 </body>
