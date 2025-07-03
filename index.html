@@ -10,83 +10,145 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --theme-color: #ffb700;
-            --theme-color-dark: #d29900;
+            --bg-dark: #0F172A; /* Tailwind Slate 900 */
+            --bg-light: #1E293B; /* Tailwind Slate 800 */
+            --primary-accent: #F59E0B; /* Tailwind Amber 500 */
+            --secondary-accent: #EC4899; /* Tailwind Pink 500 */
+            --text-light: #F1F5F9; /* Tailwind Slate 100 */
+            --text-dark: #94A3B8; /* Tailwind Slate 400 */
         }
         body {
             font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
-        body::-webkit-scrollbar {
-            display: none;
-        }
+        body::-webkit-scrollbar { display: none; }
+
         .slide-container {
-            overflow-x: hidden; 
-            overflow-y: hidden;
+            overflow: hidden;
         }
         .slide {
             flex-shrink: 0;
             width: 100vw;
             height: 100vh;
-            overflow-y: auto; /* İçerik taşarsa kaydırma ekler */
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .slide.active {
+            opacity: 1;
+            z-index: 10;
         }
         .gradient-text {
-            background: linear-gradient(to right, var(--theme-color), #f97316);
+            background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             text-fill-color: transparent;
         }
-        .fade-in-up {
-            animation: fadeInUp 0.8s ease-out forwards;
+        
+        /* Animasyonlar */
+        .anim-stagger > * {
             opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.7s ease-out forwards;
         }
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-        .slide .fade-in-up {
-            opacity: 0;
+
+        /* Kart Stilleri */
+        .premium-card {
+            background-color: var(--bg-light);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .slide.active .fade-in-up {
+        .premium-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .glow-border-card {
+            position: relative;
+            background: var(--bg-light);
+            border-radius: 1rem;
+            padding: 2rem;
+        }
+        .glow-border-card::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent));
+            z-index: -1;
+            filter: blur(8px);
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+        .glow-border-card:hover::before {
             opacity: 1;
         }
-        .feature-card {
-            background-color: rgba(31, 41, 55, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+
+        /* Buton Stilleri */
+        .btn-glow {
+            background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent));
+            color: white;
+            font-weight: bold;
+            padding: 0.75rem 2rem;
+            border-radius: 9999px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
         }
-        .btn-primary {
-            background-color: var(--theme-color);
+        .btn-glow:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.8);
         }
-        .btn-primary:hover {
-            background-color: var(--theme-color-dark);
+        .nav-btn {
+            background-color: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(5px);
+            color: var(--text-light);
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            transition: background-color 0.3s;
         }
-        .disabled-btn {
-            background-color: #4b5563; /* Tailwind gray-600 */
+        .nav-btn:hover:not(:disabled) {
+            background-color: var(--primary-accent);
         }
+        .nav-btn:disabled {
+            background-color: #334155;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Galeri Stilleri */
         .tab-btn {
             transition: all 0.3s ease;
-            border-bottom: 2px solid transparent;
+            border-bottom: 3px solid transparent;
+            color: var(--text-dark);
+            padding: 0.5rem 1rem;
         }
         .tab-btn.active {
-            color: var(--theme-color);
-            border-bottom-color: var(--theme-color);
-        }
-        .gallery-grid {
-            display: grid;
-            gap: 1rem;
+            color: var(--primary-accent);
+            border-bottom-color: var(--primary-accent);
         }
         .gallery-grid img {
-            border-radius: 0.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
             object-fit: cover;
             width: 100%;
             height: 100%;
@@ -94,45 +156,45 @@
         }
     </style>
 </head>
-<body class="bg-gray-900 text-white overflow-hidden">
+<body class="overflow-hidden">
 
     <!-- Başlangıç Ekranı -->
-    <div id="start-overlay" class="fixed inset-0 bg-gray-900 flex flex-col items-center justify-center z-50 transition-opacity duration-500">
-        <div class="text-center">
-             <div class="mx-auto w-24 h-24 bg-[#ffb700] rounded-full flex items-center justify-center shadow-2xl mb-6">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-900" viewBox="0 0 20 20" fill="currentColor">
-                   <path fill-rule="evenodd" d="M10 20a10 10 0 100-20 10 10 0 000 20zM5.5 8.5a.5.5 0 00-1 0v3a.5.5 0 001 0v-3zM8.5 7.5a.5.5 0 01.5-.5h2a.5.5 0 010 1h-2a.5.5 0 01-.5-.5zM12 9.5a.5.5 0 00-1 0v4a.5.5 0 001 0v-4z" clip-rule="evenodd" />
+    <div id="start-overlay" class="fixed inset-0 bg-gray-900 flex flex-col items-center justify-center z-50 transition-opacity duration-700">
+        <div class="text-center anim-stagger">
+             <div style="--delay: 0.1s" class="mx-auto w-28 h-28 bg-gradient-to-br from-amber-400 to-pink-600 rounded-full flex items-center justify-center shadow-2xl mb-6 animate-pulse">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                 </svg>
             </div>
-            <h1 class="text-5xl font-bold text-white mb-4">TeknoKapsül Jüri Sunumuna Hoş Geldiniz</h1>
-            <p class="text-gray-400 text-xl mb-8">Tech Istanbul Ön Kuluçka Programı</p>
-            <button id="start-presentation-btn" class="btn-primary text-gray-900 font-bold py-3 px-8 rounded-full text-lg transition-transform hover:scale-105">
-                Sunumu Başlat
-            </button>
+            <h1 style="--delay: 0.2s" class="text-5xl font-bold text-white mb-4">TeknoKapsül Jüri Sunumu</h1>
+            <p style="--delay: 0.3s" class="text-gray-400 text-xl mb-8">Tech Istanbul Ön Kuluçka Programı</p>
+            <div style="--delay: 0.4s">
+                <button id="start-presentation-btn" class="btn-glow">
+                    Sunumu Başlat
+                </button>
+            </div>
         </div>
     </div>
     
     <!-- Geri Sayım Sayacı -->
-    <div id="timer-display" class="fixed top-4 right-4 bg-gray-800 text-white text-lg font-bold py-2 px-4 rounded-lg shadow-xl z-40" style="display: none;">
+    <div id="timer-display" class="fixed top-5 right-5 bg-black/50 backdrop-blur-sm text-white text-lg font-bold py-2 px-4 rounded-full shadow-xl z-40" style="display: none;">
         04:00
     </div>
 
     <!-- Slide Container -->
-    <div id="slide-container" class="slide-container w-full h-screen flex" style="display: none;">
+    <div id="slide-container" class="slide-container w-full h-screen">
 
         <!-- Slide 1: Başlık -->
-        <div id="slide-1" class="slide flex items-center justify-center p-8 text-center bg-gray-900">
-            <div class="space-y-6">
-                <div class="fade-in-up" style="animation-delay: 0.2s;">
-                    <div class="mx-auto w-24 h-24 bg-[#ffb700] rounded-full flex items-center justify-center shadow-2xl">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-900" viewBox="0 0 20 20" fill="currentColor">
-                           <path fill-rule="evenodd" d="M10 20a10 10 0 100-20 10 10 0 000 20zM5.5 8.5a.5.5 0 00-1 0v3a.5.5 0 001 0v-3zM8.5 7.5a.5.5 0 01.5-.5h2a.5.5 0 010 1h-2a.5.5 0 01-.5-.5zM12 9.5a.5.5 0 00-1 0v4a.5.5 0 001 0v-4z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
+        <div id="slide-1" class="slide">
+            <div class="w-full max-w-6xl mx-auto text-center anim-stagger">
+                <div style="--delay: 0.2s" class="mx-auto w-24 h-24 bg-gradient-to-br from-amber-400 to-pink-600 rounded-full flex items-center justify-center shadow-2xl mb-4">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                       <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                     </svg>
                 </div>
-                <h1 class="text-6xl md:text-8xl font-black tracking-tighter fade-in-up" style="animation-delay: 0.4s;">TeknoKapsül</h1>
-                <p class="text-xl md:text-2xl text-gray-400 max-w-2xl mx-auto fade-in-up" style="animation-delay: 0.6s;">Yapay Zeka Destekli Kişisel Yaşam Asistanınız.</p>
-                <div class="text-gray-500 pt-8 fade-in-up" style="animation-delay: 0.8s;">
+                <h1 style="--delay: 0.4s" class="text-6xl md:text-8xl font-black tracking-tighter gradient-text">TeknoKapsül</h1>
+                <p style="--delay: 0.6s" class="text-xl md:text-2xl text-text-dark max-w-2xl mx-auto mt-4">Yapay Zeka Destekli Kişisel Yaşam Asistanınız.</p>
+                <div style="--delay: 0.8s" class="text-gray-500 pt-8">
                     <p>Sunan: Ersin Çelik - Kurucu & CEO</p>
                     <p>Temmuz 2025</p>
                 </div>
@@ -140,182 +202,180 @@
         </div>
 
         <!-- Slide 2: Problem -->
-        <div id="slide-2" class="slide flex flex-col items-center justify-center p-8 text-center">
-            <h2 class="text-4xl md:text-5xl font-bold gradient-text mb-4 fade-in-up" style="animation-delay: 0.2s;">Gündelik Hayatın Dijital Karmaşası</h2>
-            <p class="text-xl text-gray-400 mb-12 max-w-3xl fade-in-up" style="animation-delay: 0.4s;">Fatura takibi, sigorta yenileme, internet başvurusu, nakliyat bulma... Her biri için ayrı bir platform, ayrı bir şifre, ayrı bir efor.</p>
-            <div class="grid md:grid-cols-3 gap-8 w-full max-w-6xl">
-                <div class="bg-gray-800 p-8 rounded-2xl shadow-xl fade-in-up" style="animation-delay: 0.6s;">
-                    <h3 class="text-2xl font-bold text-amber-300 mb-2">Finansal Dağınıklık</h3>
-                    <p class="text-gray-400">Unutulan abonelikler, geciken faturalar yüzünden para ve zaman kaybı.</p>
-                </div>
-                <div class="bg-gray-800 p-8 rounded-2xl shadow-xl fade-in-up" style="animation-delay: 0.8s;">
-                    <h3 class="text-2xl font-bold text-amber-300 mb-2">Parçalanmış Hizmetler</h3>
-                    <p class="text-gray-400">Basit bir ev taşıma veya temizlik hizmeti için onlarca site arasında kaybolma.</p>
-                </div>
-                <div class="bg-gray-800 p-8 rounded-2xl shadow-xl fade-in-up" style="animation-delay: 1s;">
-                    <h3 class="text-2xl font-bold text-amber-300 mb-2">Zaman ve Enerji Tüketimi</h3>
-                    <p class="text-gray-400">Hayatı kolaylaştırması gereken teknolojinin, yönetilmesi gereken bir yüke dönüşmesi.</p>
+        <div id="slide-2" class="slide">
+            <div class="w-full max-w-6xl mx-auto anim-stagger">
+                <h2 style="--delay: 0.2s" class="text-4xl md:text-5xl font-bold text-center mb-4">Gündelik Hayatın <span class="gradient-text">Dijital Karmaşası</span></h2>
+                <p style="--delay: 0.4s" class="text-xl text-text-dark text-center mb-12 max-w-3xl mx-auto">Fatura takibi, sigorta yenileme, internet başvurusu... Her biri için ayrı bir platform, ayrı bir şifre, ayrı bir efor.</p>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div style="--delay: 0.6s" class="premium-card text-center">
+                        <h3 class="text-2xl font-bold text-amber-400 mb-2">Finansal Dağınıklık</h3>
+                        <p class="text-text-dark">Unutulan abonelikler, geciken faturalar yüzünden para ve zaman kaybı.</p>
+                    </div>
+                    <div style="--delay: 0.8s" class="premium-card text-center">
+                        <h3 class="text-2xl font-bold text-amber-400 mb-2">Parçalanmış Hizmetler</h3>
+                        <p class="text-text-dark">Basit bir ev taşıma için onlarca site arasında kaybolma.</p>
+                    </div>
+                    <div style="--delay: 1.0s" class="premium-card text-center">
+                        <h3 class="text-2xl font-bold text-amber-400 mb-2">Zaman ve Enerji Tüketimi</h3>
+                        <p class="text-text-dark">Hayatı kolaylaştırması gereken teknolojinin, yönetilmesi gereken bir yüke dönüşmesi.</p>
+                    </div>
                 </div>
             </div>
         </div>
         
         <!-- Slide 3: Çözüm -->
-        <div id="slide-3" class="slide flex flex-col items-center justify-center p-8 text-center">
-            <h2 class="text-4xl md:text-5xl font-bold gradient-text mb-4 fade-in-up" style="animation-delay: 0.2s;">Çözüm: Türkiye'nin İlk Gerçek Süper-Uygulaması</h2>
-            <p class="text-xl text-gray-300 mb-12 max-w-3xl fade-in-up" style="animation-delay: 0.4s;">TeknoKapsül, finans, dijital yaşam ve gündelik hizmetleri <strong class="text-amber-300">yapay zeka gücüyle</strong> birleştirerek hayatınızın kontrolünü size geri veriyor.</p>
-            <div class="w-full max-w-5xl p-8 bg-gray-800 rounded-2xl shadow-2xl fade-in-up" style="animation-delay: 0.6s;">
-                 <h3 class="text-3xl font-bold text-white mb-6">Tüm Hayatınız Tek Akıllı Kapsülde</h3>
-                 <div class="flex justify-around items-center text-amber-300">
-                    <div class="text-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                        <p>Finans</p>
-                    </div>
-                    <div class="text-4xl text-gray-600">+</div>
-                    <div class="text-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                        <p>Dijital</p>
-                    </div>
-                    <div class="text-4xl text-gray-600">+</div>
-                    <div class="text-center">
-                         <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
-                        <p>Yaşam</p>
-                    </div>
-                     <div class="text-4xl text-gray-600">=</div>
-                     <div class="text-center">
-                         <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-                        <p>Akıllı Kontrol</p>
-                    </div>
-                 </div>
+        <div id="slide-3" class="slide">
+            <div class="w-full max-w-6xl mx-auto text-center anim-stagger">
+                <h2 style="--delay: 0.2s" class="text-4xl md:text-5xl font-bold mb-4">Çözüm: Türkiye'nin İlk Gerçek <span class="gradient-text">Süper-Uygulaması</span></h2>
+                <p style="--delay: 0.4s" class="text-xl text-text-dark mb-12 max-w-3xl mx-auto">TeknoKapsül, finans, dijital yaşam ve gündelik hizmetleri <strong class="text-amber-400">yapay zeka gücüyle</strong> birleştirerek hayatınızın kontrolünü size geri veriyor.</p>
+                <div style="--delay: 0.6s" class="w-full max-w-5xl p-8 premium-card">
+                     <h3 class="text-3xl font-bold text-white mb-6">Tüm Hayatınız Tek Akıllı Kapsülde</h3>
+                     <div class="flex justify-around items-center text-text-light">
+                        <div class="text-center"><p class="font-bold">Finans</p></div>
+                        <div class="text-4xl text-text-dark">+</div>
+                        <div class="text-center"><p class="font-bold">Dijital</p></div>
+                        <div class="text-4xl text-text-dark">+</div>
+                        <div class="text-center"><p class="font-bold">Yaşam</p></div>
+                        <div class="text-4xl text-pink-500">=</div>
+                        <div class="text-center"><p class="text-2xl font-bold gradient-text">Akıllı Kontrol</p></div>
+                     </div>
+                </div>
             </div>
         </div>
         
         <!-- Slide 4: Hizmet Kategorileri -->
-        <div id="slide-4" class="slide flex flex-col items-center justify-center p-8">
-            <h2 class="text-4xl md:text-5xl font-bold gradient-text mb-12 text-center fade-in-up" style="animation-delay: 0.2s;">Kapsamlı Hizmet Yelpazemiz</h2>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-6xl w-full">
-                <div class="feature-card p-6 rounded-2xl text-center fade-in-up" style="animation-delay: 0.4s;"><h3 class="text-lg md:text-xl font-bold text-amber-300 mb-2">Sigortacılık</h3><p class="text-gray-400 text-sm">Trafik, Kasko, DASK ve 11+ farklı sigorta hizmeti.</p></div>
-                <div class="feature-card p-6 rounded-2xl text-center fade-in-up" style="animation-delay: 0.5s;"><h3 class="text-lg md:text-xl font-bold text-amber-300 mb-2">Faturalar</h3><p class="text-gray-400 text-sm">Tüm elektrik, su, doğalgaz faturalarınız tek ekranda.</p></div>
-                <div class="feature-card p-6 rounded-2xl text-center fade-in-up" style="animation-delay: 0.6s;"><h3 class="text-lg md:text-xl font-bold text-amber-300 mb-2">İnternet & GSM</h3><p class="text-gray-400 text-sm">Yeni başvuru, numara taşıma ve TV paketleri.</p></div>
-                <div class="feature-card p-6 rounded-2xl text-center fade-in-up" style="animation-delay: 0.7s;"><h3 class="text-lg md:text-xl font-bold text-amber-300 mb-2">Dijital Servisler</h3><p class="text-gray-400 text-sm">Oyun kodları, platform üyelikleri ve dijital marketler.</p></div>
-                <div class="feature-card p-6 rounded-2xl text-center fade-in-up" style="animation-delay: 0.8s;"><h3 class="text-lg md:text-xl font-bold text-amber-300 mb-2">Teknik Servis</h3><p class="text-gray-400 text-sm">Tüm popüler marka telefon ve cihaz tamiri.</p></div>
-                <div class="feature-card p-6 rounded-2xl text-center fade-in-up" style="animation-delay: 0.9s;"><h3 class="text-lg md:text-xl font-bold text-amber-300 mb-2">Ev Hizmetleri</h3><p class="text-gray-400 text-sm">Temizlik, ilaçlama ve bakım hizmetleri.</p></div>
-                <div class="feature-card p-6 rounded-2xl text-center fade-in-up" style="animation-delay: 1.0s;"><h3 class="text-lg md:text-xl font-bold text-amber-300 mb-2">Nakliyat</h3><p class="text-gray-400 text-sm">Şehirler arası ve parça eşya taşıma çözümleri.</p></div>
-                <div class="feature-card p-6 rounded-2xl text-center fade-in-up" style="animation-delay: 1.1s;"><h3 class="text-lg md:text-xl font-bold text-amber-300 mb-2">E-Hizmetler</h3><p class="text-gray-400 text-sm">E-imza, KEP adresi ve E-fatura başvuruları.</p></div>
+        <div id="slide-4" class="slide">
+            <div class="w-full max-w-7xl mx-auto anim-stagger">
+                <h2 style="--delay: 0.2s" class="text-4xl md:text-5xl font-bold gradient-text mb-12 text-center">Kapsamlı Hizmet Yelpazemiz</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div style="--delay: 0.3s" class="premium-card text-center"><h3 class="text-xl font-bold text-amber-400 mb-2">Sigortacılık</h3></div>
+                    <div style="--delay: 0.4s" class="premium-card text-center"><h3 class="text-xl font-bold text-amber-400 mb-2">Faturalar</h3></div>
+                    <div style="--delay: 0.5s" class="premium-card text-center"><h3 class="text-xl font-bold text-amber-400 mb-2">İnternet & GSM</h3></div>
+                    <div style="--delay: 0.6s" class="premium-card text-center"><h3 class="text-xl font-bold text-amber-400 mb-2">Dijital Servisler</h3></div>
+                    <div style="--delay: 0.7s" class="premium-card text-center"><h3 class="text-xl font-bold text-amber-400 mb-2">Teknik Servis</h3></div>
+                    <div style="--delay: 0.8s" class="premium-card text-center"><h3 class="text-xl font-bold text-amber-400 mb-2">Ev Hizmetleri</h3></div>
+                    <div style="--delay: 0.9s" class="premium-card text-center"><h3 class="text-xl font-bold text-amber-400 mb-2">Nakliyat</h3></div>
+                    <div style="--delay: 1.0s" class="premium-card text-center"><h3 class="text-xl font-bold text-amber-400 mb-2">E-Hizmetler</h3></div>
+                </div>
             </div>
         </div>
 
-        <!-- Slide 5: Hizmet Detayları (Birleştirilmiş) -->
-        <div id="slide-5" class="slide flex flex-col items-center justify-center p-8">
-            <h2 class="text-4xl md:text-5xl font-bold gradient-text mb-10 text-center fade-in-up" style="animation-delay: 0.2s;">Hizmet Detayları</h2>
-            <div class="grid md:grid-cols-3 gap-8 max-w-7xl w-full">
-                <!-- Finans & Faturalar -->
-                <div class="bg-gray-800 p-6 rounded-lg fade-in-up" style="animation-delay: 0.4s;">
-                    <h3 class="font-bold text-2xl mb-4 text-amber-300">Finans & Faturalar</h3>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><b>Sigortalar (14+):</b> Trafik, Kasko, DASK, Sağlık...</li>
-                        <li><b>Fatura Ödemeleri (9+):</b> İSKİ, İGDAŞ, EnerjiSA...</li>
-                        <li><b>E-Hizmetler (3+):</b> E-imza, KEP, E-Fatura...</li>
-                    </ul>
-                </div>
-                <!-- Dijital Yaşam -->
-                <div class="bg-gray-800 p-6 rounded-lg fade-in-up" style="animation-delay: 0.6s;">
-                    <h3 class="font-bold text-2xl mb-4 text-amber-300">Dijital Yaşam</h3>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><b>İnternet & TV (13+):</b> Superonline, Millenicom...</li>
-                        <li><b>GSM Operatörleri (6+):</b> Turkcell, Vodafone...</li>
-                        <li><b>Dijital Kodlar (17+):</b> Valorant, LoL, TOD TV...</li>
-                    </ul>
-                </div>
-                <!-- Ev & Yaşam -->
-                <div class="bg-gray-800 p-6 rounded-lg fade-in-up" style="animation-delay: 0.8s;">
-                    <h3 class="font-bold text-2xl mb-4 text-amber-300">Ev & Yaşam</h3>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><b>Teknik Servis (8+):</b> Apple, Samsung, Xiaomi...</li>
-                        <li><b>Temizlik & Bakım (4+):</b> Ev, Ofis, İlaçlama...</li>
-                        <li><b>Nakliyat (2+):</b> Şehirler arası, Parça Eşya...</li>
-                    </ul>
+        <!-- Slide 5: Hizmet Detayları -->
+        <div id="slide-5" class="slide">
+            <div class="w-full max-w-7xl mx-auto anim-stagger">
+                <h2 style="--delay: 0.2s" class="text-4xl md:text-5xl font-bold gradient-text mb-10 text-center">Hizmet Detayları</h2>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div style="--delay: 0.4s" class="premium-card">
+                        <h3 class="font-bold text-2xl mb-4 text-amber-400">Finans & Faturalar</h3>
+                        <ul class="space-y-2 text-text-dark list-disc list-inside">
+                            <li><b>Sigortalar (14+):</b> Trafik, Kasko, DASK...</li>
+                            <li><b>Fatura Ödemeleri (9+):</b> İSKİ, İGDAŞ...</li>
+                            <li><b>E-Hizmetler (3+):</b> E-imza, KEP, E-Fatura...</li>
+                        </ul>
+                    </div>
+                    <div style="--delay: 0.6s" class="premium-card">
+                        <h3 class="font-bold text-2xl mb-4 text-amber-400">Dijital Yaşam</h3>
+                        <ul class="space-y-2 text-text-dark list-disc list-inside">
+                            <li><b>İnternet & TV (13+):</b> Superonline, Millenicom...</li>
+                            <li><b>GSM Operatörleri (6+):</b> Turkcell, Vodafone...</li>
+                            <li><b>Dijital Kodlar (17+):</b> Valorant, LoL, TOD TV...</li>
+                        </ul>
+                    </div>
+                    <div style="--delay: 0.8s" class="premium-card">
+                        <h3 class="font-bold text-2xl mb-4 text-amber-400">Ev & Yaşam</h3>
+                        <ul class="space-y-2 text-text-dark list-disc list-inside">
+                            <li><b>Teknik Servis (8+):</b> Apple, Samsung...</li>
+                            <li><b>Temizlik & Bakım (4+):</b> Ev, Ofis, İlaçlama...</li>
+                            <li><b>Nakliyat (2+):</b> Şehirler arası, Parça Eşya...</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Slide 6: Ürün Galerisi -->
-        <div id="slide-6" class="slide flex flex-col items-center justify-center p-8">
-            <h2 class="text-4xl md:text-5xl font-bold gradient-text mb-6 text-center fade-in-up" style="animation-delay: 0.2s;">Ürünümüz: Web ve Mobil</h2>
-            <p class="text-lg text-gray-400 mb-8 max-w-3xl text-center fade-in-up" style="animation-delay: 0.4s;">
-                Tüm hizmetlere hem kapsamlı web platformumuzdan hem de her an yanınızda olan mobil uygulamamızdan erişin.
-            </p>
-            <div class="w-full max-w-6xl bg-gray-800 p-4 sm:p-6 rounded-2xl shadow-2xl fade-in-up" style="animation-delay: 0.6s;">
-                <div class="flex justify-center border-b border-gray-700 mb-4">
-                    <button id="web-tab-btn" class="tab-btn active text-lg font-bold py-2 px-6">Web Arayüzü</button>
-                    <button id="mobile-tab-btn" class="tab-btn text-lg font-bold py-2 px-6">Mobil Uygulama</button>
-                </div>
-                <div id="web-gallery" class="gallery-panel">
-                    <div class="gallery-grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <img src="/2.png" alt="[TeknoKapsül Web Arayüzü - Ana Sayfa]" class="md:col-span-2">
-                        <img src="/3.png" alt="[TeknoKapsül Web Arayüzü - Hizmetler]">
-                        <img src="/4.png" alt="[TeknoKapsül Web Arayüzü - Abonelik Takibi]">
+        <div id="slide-6" class="slide">
+            <div class="w-full max-w-6xl mx-auto anim-stagger">
+                <h2 style="--delay: 0.2s" class="text-4xl md:text-5xl font-bold gradient-text mb-6 text-center">Ürünümüz: Web ve Mobil</h2>
+                <p style="--delay: 0.4s" class="text-lg text-text-dark mb-8 max-w-3xl text-center mx-auto">
+                    Tüm hizmetlere hem kapsamlı web platformumuzdan hem de her an yanınızda olan mobil uygulamamızdan erişin.
+                </p>
+                <div style="--delay: 0.6s" class="w-full bg-slate-900/50 p-4 sm:p-6 rounded-2xl shadow-2xl">
+                    <div class="flex justify-center border-b border-slate-700 mb-4">
+                        <button id="web-tab-btn" class="tab-btn active text-lg font-bold">Web Arayüzü</button>
+                        <button id="mobile-tab-btn" class="tab-btn text-lg font-bold">Mobil Uygulama</button>
                     </div>
-                </div>
-                <div id="mobile-gallery" class="gallery-panel hidden">
-                    <div class="gallery-grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        <img src="/5.jpeg" alt="[TeknoKapsül Mobil Uygulama - Ana Ekran]">
-                        <img src="/6.jpeg" alt="[TeknoKapsül Mobil Uygulama - Finans]">
-                        <img src="/7.jpeg" alt="[TeknoKapsül Mobil Uygulama - Hizmetler]">
-                        <img src="/8.jpeg" alt="[TeknoKapsül Mobil Uygulama - Oyunlar]">
+                    <div id="web-gallery" class="gallery-panel">
+                        <div class="gallery-grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <img src="https://i.ibb.co/L63xV5v/Ekran-Resmi-2025-07-03-21-54-57.jpg" alt="[TeknoKapsül Web Arayüzü - Ana Sayfa]" class="md:col-span-2">
+                            <img src="https://i.ibb.co/HhX0xPz/Ekran-Resmi-2025-07-03-21-55-06.jpg" alt="[TeknoKapsül Web Arayüzü - Hizmetler]">
+                            <img src="https://i.ibb.co/vLgCjN1/Ekran-Resmi-2025-07-03-21-55-26.jpg" alt="[TeknoKapsül Web Arayüzü - Abonelik Takibi]">
+                        </div>
+                    </div>
+                    <div id="mobile-gallery" class="gallery-panel hidden">
+                        <div class="gallery-grid grid-cols-2 sm:grid-cols-4 gap-4">
+                            <img src="https://i.ibb.co/Ld11BqG/WhatsApp-Image-2025-07-03-at-21-57-26.jpg" alt="[TeknoKapsül Mobil Uygulama - Ana Ekran]">
+                            <img src="https://i.ibb.co/hLqj6fG/WhatsApp-Image-2025-07-03-at-21-57-26-1.jpg" alt="[TeknoKapsül Mobil Uygulama - Finans]">
+                            <img src="https://i.ibb.co/M8VzQv3/WhatsApp-Image-2025-07-03-at-21-57-26-2.jpg" alt="[TeknoKapsül Mobil Uygulama - Hizmetler]">
+                            <img src="https://i.ibb.co/LgLw3wY/WhatsApp-Image-2025-07-03-at-21-57-26-3.jpg" alt="[TeknoKapsül Mobil Uygulama - Oyunlar]">
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         
         <!-- Slide 7: Pazar Büyüklüğü -->
-        <div id="slide-7" class="slide flex flex-col items-center justify-center p-8 text-center"><h2 class="text-4xl md:text-5xl font-bold gradient-text mb-12 fade-in-up" style="animation-delay: 0.2s;">Pazar Büyüklüğü</h2><div class="grid md:grid-cols-3 gap-8 w-full max-w-6xl"><div class="bg-gray-800 p-8 rounded-2xl shadow-xl border-t-4 border-amber-500 fade-in-up" style="animation-delay: 0.4s;"><h3 class="text-xl font-bold text-gray-400 mb-2">TAM</h3><p class="text-4xl font-extrabold text-white">45 Milyon</p><p class="text-gray-500">Türkiye'deki dijital ödeme ve hizmetleri kullanan internet kullanıcısı.</p></div><div class="bg-gray-800 p-8 rounded-2xl shadow-xl border-t-4 border-orange-500 fade-in-up" style="animation-delay: 0.6s;"><h3 class="text-xl font-bold text-gray-400 mb-2">SAM</h3><p class="text-4xl font-extrabold text-white">20 Milyon</p><p class="text-gray-500">Birden fazla dijital hizmeti aktif yöneten teknolojiye yatkın kitle.</p></div><div class="bg-gray-800 p-8 rounded-2xl shadow-xl border-t-4 border-emerald-500 fade-in-up" style="animation-delay: 0.8s;"><h3 class="text-xl font-bold text-gray-400 mb-2">SOM (Hedef)</h3><p class="text-4xl font-extrabold text-white">250.000</p><p class="text-gray-500">İlk yıl içinde ulaşmayı hedeflediğimiz aktif kullanıcı sayısı.</p></div></div></div>
+        <div id="slide-7" class="slide">
+            <div class="w-full max-w-6xl mx-auto text-center anim-stagger">
+                <h2 style="--delay: 0.2s" class="text-4xl md:text-5xl font-bold gradient-text mb-12">Pazar Büyüklüğü</h2>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div style="--delay: 0.4s" class="glow-border-card"><h3 class="text-xl font-bold text-text-dark mb-2">TAM</h3><p class="text-5xl font-extrabold text-white">45 Milyon</p><p class="text-text-dark mt-2">Dijital hizmet kullanıcısı.</p></div>
+                    <div style="--delay: 0.6s" class="glow-border-card"><h3 class="text-xl font-bold text-text-dark mb-2">SAM</h3><p class="text-5xl font-extrabold text-white">20 Milyon</p><p class="text-text-dark mt-2">Teknolojiye yatkın kitle.</p></div>
+                    <div style="--delay: 0.8s" class="glow-border-card"><h3 class="text-xl font-bold text-text-dark mb-2">SOM (Hedef)</h3><p class="text-5xl font-extrabold text-white">250.000</p><p class="text-text-dark mt-2">İlk yıl hedef kullanıcı.</p></div>
+                </div>
+            </div>
+        </div>
 
-        <!-- Slide 8: Pazardaki Benzersiz Konumumuz (Yenilendi) -->
-        <div id="slide-8" class="slide flex flex-col items-center justify-center p-8">
-            <h2 class="text-4xl md:text-5xl font-bold gradient-text mb-12 text-center fade-in-up" style="animation-delay: 0.2s;">Pazardaki Benzersiz Konumumuz</h2>
-            <div class="bg-gray-800 p-10 rounded-2xl shadow-xl w-full max-w-4xl text-center border-t-4 border-amber-500 fade-in-up" style="animation-delay: 0.4s;">
-                <h3 class="text-3xl font-bold text-white mb-6">Biz Bir Kategori Yaratıyoruz, Rekabet Etmiyoruz.</h3>
-                <p class="text-xl text-gray-300 mb-8">Piyasada dikey alanlarda (sadece finans, sadece hizmet vb.) uzmanlaşmış çözümler var. Ancak hiçbiri, hayatın tüm dijital ihtiyaçlarını tek bir çatı altında toplayan <strong class="text-amber-300">bütünsel bir deneyim</strong> sunmuyor.</p>
-                <div class="grid md:grid-cols-2 gap-6 text-left">
-                    <div class="bg-gray-900 p-4 rounded-lg">
-                        <p class="text-xl text-amber-300 font-semibold">1. YATAY ENTEGRASYON (SÜPER-UYGULAMA)</p>
-                        <p class="text-gray-400">Finans, hizmet ve dijital yaşamı birleştiren ilk ve tek platformuz.</p>
-                    </div>
-                    <div class="bg-gray-900 p-4 rounded-lg">
-                        <p class="text-xl text-amber-300 font-semibold">2. YAPAY ZEKA DESTEKLİ KİŞİSELLEŞTİRME</p>
-                        <p class="text-gray-400">Kullanıcılara proaktif ve akıllı tavsiyeler sunarak onlara gerçek bir asistanlık yapıyoruz.</p>
+        <!-- Slide 8: Pazardaki Benzersiz Konumumuz -->
+        <div id="slide-8" class="slide">
+            <div class="w-full max-w-4xl mx-auto text-center anim-stagger">
+                <h2 style="--delay: 0.2s" class="text-4xl md:text-5xl font-bold mb-12">Pazardaki <span class="gradient-text">Benzersiz Konumumuz</span></h2>
+                <div style="--delay: 0.4s" class="premium-card p-10">
+                    <h3 class="text-3xl font-bold text-white mb-6">Biz Bir Kategori Yaratıyoruz, Rekabet Etmiyoruz.</h3>
+                    <p class="text-xl text-text-dark mb-8">Piyasada dikey çözümler var. Ancak hiçbiri, hayatın tüm dijital ihtiyaçlarını tek çatıda toplayan <strong class="text-amber-400">bütünsel bir deneyim</strong> sunmuyor.</p>
+                    <div class="grid md:grid-cols-2 gap-6 text-left">
+                        <div class="bg-slate-900 p-4 rounded-lg"><p class="text-xl text-amber-400 font-semibold">1. YATAY ENTEGRASYON</p><p class="text-text-dark">Finans, hizmet ve dijital yaşamı birleştiren ilk ve tek platformuz.</p></div>
+                        <div class="bg-slate-900 p-4 rounded-lg"><p class="text-xl text-amber-400 font-semibold">2. YAPAY ZEKA DESTEĞİ</p><p class="text-text-dark">Kullanıcılara proaktif ve akıllı tavsiyeler sunan gerçek bir asistanlık.</p></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Slide 9: Stratejik İş Birlikleri & Gelecek Vizyonu (Yenilendi) -->
-        <div id="slide-9" class="slide flex flex-col items-center justify-center p-8">
-            <div class="text-center fade-in-up" style="animation-delay: 0.2s;">
-                <img src="image_09648a.jpg" alt="[Tech Istanbul Logosu]" class="h-20 mx-auto mb-4">
-                <h2 class="text-4xl md:text-5xl font-bold gradient-text mb-4">Stratejik İş Birlikleri & Gelecek Vizyonu</h2>
-            </div>
-            <div class="w-full max-w-7xl">
-                <p class="text-lg text-gray-400 my-6 max-w-3xl mx-auto text-center fade-in-up" style="animation-delay: 0.4s;">
+        <!-- Slide 9: Stratejik İş Birlikleri & Gelecek Vizyonu -->
+        <div id="slide-9" class="slide">
+            <div class="w-full max-w-7xl mx-auto anim-stagger">
+                <div style="--delay: 0.2s" class="text-center">
+                    <img src="https://i.ibb.co/sW0T0rS/image-09648a.jpg" alt="[Tech Istanbul Logosu]" class="h-20 mx-auto mb-4">
+                    <h2 class="text-4xl md:text-5xl font-bold gradient-text mb-4">Stratejik İş Birlikleri & Gelecek Vizyonu</h2>
+                </div>
+                <p style="--delay: 0.4s" class="text-lg text-text-dark my-6 max-w-3xl mx-auto text-center">
                     TeknoKapsül, İBB ve finans kuruluşları ile entegre olarak milyonlarca kullanıcının hayatına dokunma potansiyeline sahiptir.
                 </p>
                 <div class="grid md:grid-cols-2 gap-8">
-                    <!-- İBB Entegrasyonları -->
-                    <div class="fade-in-up" style="animation-delay: 0.6s;">
+                    <div style="--delay: 0.6s" class="premium-card">
                         <h3 class="text-2xl font-bold text-white mb-4">İBB Entegrasyon Fırsatları</h3>
-                        <div class="space-y-4">
-                            <div class="feature-card p-4 rounded-lg"><b>İstanbulkart:</b> Bakiye yükleme ve abonman takibi.</div>
-                            <div class="feature-card p-4 rounded-lg"><b>İSKİ & İGDAŞ:</b> Doğrudan fatura ödeme ve borç sorgulama.</div>
-                            <div class="feature-card p-4 rounded-lg"><b>Kültür A.Ş.:</b> Etkinlik takibi ve bilet alımı.</div>
+                        <div class="space-y-4 text-text-dark">
+                            <p><b>İstanbulkart:</b> Bakiye yükleme ve abonman takibi.</p>
+                            <p><b>İSKİ & İGDAŞ:</b> Doğrudan fatura ödeme ve borç sorgulama.</p>
+                            <p><b>Kültür A.Ş.:</b> Etkinlik takibi ve bilet alımı.</p>
                         </div>
                     </div>
-                    <!-- Finansal Entegrasyonlar -->
-                    <div class="fade-in-up" style="animation-delay: 0.8s;">
+                    <div style="--delay: 0.8s" class="premium-card">
                         <h3 class="text-2xl font-bold text-white mb-4">Gelecek Faz: Finansal Entegrasyonlar</h3>
-                        <div class="space-y-4">
-                            <div class="feature-card p-4 rounded-lg"><b>Banka Entegrasyonları:</b> Kullanıcıların tüm bankalardaki kredi ve borçlarını tek ekrandan görmesi.</div>
-                            <div class="feature-card p-4 rounded-lg"><b>Açık Bankacılık:</b> Kişiye özel akıllı bütçe yönetimi ve tasarruf önerileri.</div>
-                            <div class="feature-card p-4 rounded-lg"><b>Mikro Kredi:</b> Acil ihtiyaçlar için uygulama içi hızlı kredi imkanları.</div>
+                        <div class="space-y-4 text-text-dark">
+                            <p><b>Banka Entegrasyonları:</b> Tüm kredi ve borçları tek ekranda görme.</p>
+                            <p><b>Açık Bankacılık:</b> Akıllı bütçe yönetimi ve tasarruf önerileri.</p>
+                            <p><b>Mikro Kredi:</b> Uygulama içi hızlı kredi imkanları.</p>
                         </div>
                     </div>
                 </div>
@@ -323,17 +383,27 @@
         </div>
         
         <!-- Slide 10: Gelir Modeli -->
-        <div id="slide-10" class="slide flex flex-col items-center justify-center p-8 text-center"><h2 class="text-4xl md:text-5xl font-bold gradient-text mb-12 fade-in-up" style="animation-delay: 0.2s;">Çok Kanallı Gelir Modeli</h2><div class="grid md:grid-cols-4 gap-6 w-full max-w-7xl"><div class="bg-gray-800 p-6 rounded-2xl shadow-xl fade-in-up" style="animation-delay: 0.4s;"><h3 class="text-xl font-bold text-white mb-2">Hizmet Komisyonu</h3><p class="text-gray-400">Fatura, sigorta, dijital kod gibi işlemlerden alınan pay.</p></div><div class="bg-gray-800 p-6 rounded-2xl shadow-xl fade-in-up" style="animation-delay: 0.5s;"><h3 class="text-xl font-bold text-white mb-2">Lead Generation</h3><p class="text-gray-400">Nakliyat, temizlik, servis gibi hizmetler için iş ortaklarına yönlendirilen müşterilerden gelir.</p></div><div class="bg-gray-800 p-6 rounded-2xl shadow-xl fade-in-up" style="animation-delay: 0.6s;"><h3 class="text-xl font-bold text-white mb-2">Affiliate (Satış Ortaklığı)</h3><p class="text-gray-400">İnternet, GSM ve diğer abonelik başvurularından elde edilen gelir.</p></div><div class="bg-gray-800 p-6 rounded-2xl shadow-xl fade-in-up" style="animation-delay: 0.7s;"><h3 class="text-xl font-bold text-white mb-2">Freemium (Gelecek)</h3><p class="text-gray-400">"TeknoKapsül Plus" ile gelişmiş raporlama ve ek avantajlar.</p></div></div></div>
+        <div id="slide-10" class="slide">
+            <div class="w-full max-w-7xl mx-auto text-center anim-stagger">
+                <h2 style="--delay: 0.2s" class="text-4xl md:text-5xl font-bold gradient-text mb-12">Çok Kanallı Gelir Modeli</h2>
+                <div class="grid md:grid-cols-4 gap-6">
+                    <div style="--delay: 0.4s" class="premium-card"><h3 class="text-xl font-bold text-white mb-2">Hizmet Komisyonu</h3><p class="text-text-dark">Fatura, sigorta, dijital kod işlemlerinden alınan pay.</p></div>
+                    <div style="--delay: 0.5s" class="premium-card"><h3 class="text-xl font-bold text-white mb-2">Lead Generation</h3><p class="text-text-dark">İş ortaklarına yönlendirilen müşterilerden gelir.</p></div>
+                    <div style="--delay: 0.6s" class="premium-card"><h3 class="text-xl font-bold text-white mb-2">Satış Ortaklığı</h3><p class="text-text-dark">İnternet, GSM ve diğer abonelik başvurularından gelir.</p></div>
+                    <div style="--delay: 0.7s" class="premium-card"><h3 class="text-xl font-bold text-white mb-2">Freemium (Gelecek)</h3><p class="text-text-dark">"Plus" ile gelişmiş raporlama ve ek avantajlar.</p></div>
+                </div>
+            </div>
+        </div>
 
         <!-- Slide 11: Kapanış -->
-        <div id="slide-11" class="slide flex items-center justify-center p-8 text-center bg-gray-900">
-            <div class="space-y-8 max-w-4xl">
-                <h2 class="text-4xl md:text-6xl font-bold text-white tracking-tight fade-in-up" style="animation-delay: 0.2s;">
+        <div id="slide-11" class="slide">
+            <div class="w-full max-w-4xl mx-auto text-center anim-stagger">
+                <h2 style="--delay: 0.2s" class="text-4xl md:text-6xl font-bold text-white tracking-tight">
                     Vizyonumuz: Türkiye'nin yapay zeka destekli yaşam <span class="gradient-text">işletim sistemi</span> olmak.
                 </h2>
-                <p class="text-xl text-gray-400 fade-in-up" style="animation-delay: 0.4s;">Kullanıcılarımıza sadece hizmet sunmakla kalmayıp, onlara akıllı tavsiyelerle yol gösteren, hayatlarını gerçekten kolaylaştıran bir yol arkadaşı olacağız. Dijital karmaşayı bitirecek bu devrime katılın.</p>
-                <div class="pt-8 fade-in-up" style="animation-delay: 0.6s;">
-                     <img src="tech.png" alt="[Tech Istanbul Logosu]" class="h-16 mx-auto mb-4 opacity-75">
+                <p style="--delay: 0.4s" class="text-xl text-text-dark mt-6">Kullanıcılarımıza sadece hizmet sunmakla kalmayıp, onlara akıllı tavsiyelerle yol gösteren, hayatlarını gerçekten kolaylaştıran bir yol arkadaşı olacağız.</p>
+                <div style="--delay: 0.6s" class="pt-8">
+                     <img src="https://i.ibb.co/sW0T0rS/image-09648a.jpg" alt="[Tech Istanbul Logosu]" class="h-16 mx-auto mb-4 opacity-75">
                      <h3 class="text-3xl font-bold text-white">Teşekkürler & Sorular</h3>
                      <p class="text-gray-500 mt-4">bilgi@teknokapsul.com | teknokapsul.com</p>
                 </div>
@@ -343,147 +413,149 @@
     </div>
 
     <!-- Navigation -->
-    <div id="navigation-controls" class="fixed bottom-0 left-0 right-0 p-4 flex justify-between items-center bg-gray-900 bg-opacity-50" style="display: none;">
-        <button id="prevBtn" class="btn-primary text-gray-900 font-bold py-2 px-4 rounded-full disabled:disabled-btn disabled:cursor-not-allowed transition-colors">
+    <div id="navigation-controls" class="fixed bottom-5 left-1/2 -translate-x-1/2 p-2 flex justify-between items-center bg-black/30 backdrop-blur-sm rounded-full z-30" style="display: none;">
+        <button id="prevBtn" class="nav-btn">
             &larr; Geri
         </button>
-        <div id="slide-counter" class="text-sm text-gray-400">1 / 11</div>
-        <button id="nextBtn" class="btn-primary text-gray-900 font-bold py-2 px-4 rounded-full disabled:disabled-btn disabled:cursor-not-allowed transition-colors">
+        <div id="slide-counter" class="text-sm text-text-dark mx-6">1 / 11</div>
+        <button id="nextBtn" class="nav-btn">
             İleri &rarr;
         </button>
     </div>
 
     <script>
-        const slideContainer = document.getElementById('slide-container');
-        const slides = document.querySelectorAll('.slide');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const slideCounter = document.getElementById('slide-counter');
-        const totalSlides = slides.length;
-        let currentSlide = 0;
+        document.addEventListener('DOMContentLoaded', () => {
+            const slideContainer = document.getElementById('slide-container');
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const slideCounter = document.getElementById('slide-counter');
+            const totalSlides = slides.length;
+            let currentSlide = 0;
+            let isAnimating = false;
 
-        const startOverlay = document.getElementById('start-overlay');
-        const startPresentationBtn = document.getElementById('start-presentation-btn');
-        const timerDisplay = document.getElementById('timer-display');
-        const navigationControls = document.getElementById('navigation-controls');
+            const startOverlay = document.getElementById('start-overlay');
+            const startPresentationBtn = document.getElementById('start-presentation-btn');
+            const timerDisplay = document.getElementById('timer-display');
+            const navigationControls = document.getElementById('navigation-controls');
 
-        function updateSlide() {
-            slideContainer.scrollTo({
-                left: currentSlide * window.innerWidth,
-                behavior: 'smooth'
+            function updateSlide(newIndex) {
+                if (isAnimating) return;
+                isAnimating = true;
+
+                const oldSlide = slides[currentSlide];
+                const newSlide = slides[newIndex];
+
+                // Yeni slaytı aktif et
+                newSlide.classList.add('active');
+                
+                // Animasyonları tetikle
+                const animatedElements = newSlide.querySelectorAll('.anim-stagger > *');
+                animatedElements.forEach(el => {
+                    const delay = el.style.getPropertyValue('--delay') || '0s';
+                    el.style.animation = 'none';
+                    el.offsetHeight; // Reflow
+                    el.style.animation = `fadeInUp 0.7s ${delay} ease-out forwards`;
+                });
+                
+                // Eski slaytı gizle
+                if (oldSlide !== newSlide) {
+                    setTimeout(() => {
+                        oldSlide.classList.remove('active');
+                    }, 600); // Transition süresiyle eşleşmeli
+                }
+                
+                currentSlide = newIndex;
+
+                prevBtn.disabled = currentSlide === 0;
+                nextBtn.disabled = currentSlide === totalSlides - 1;
+                slideCounter.textContent = `${currentSlide + 1} / ${totalSlides}`;
+
+                setTimeout(() => {
+                    isAnimating = false;
+                }, 600);
+            }
+
+            function startTimer(duration, display) {
+                let timer = duration, minutes, seconds;
+                const interval = setInterval(() => {
+                    minutes = parseInt(timer / 60, 10);
+                    seconds = parseInt(timer % 60, 10);
+
+                    minutes = minutes < 10 ? "0" + minutes : minutes;
+                    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                    display.textContent = minutes + ":" + seconds;
+
+                    if (--timer < 0) {
+                        clearInterval(interval);
+                        display.textContent = "Süre Doldu";
+                        display.classList.add('bg-red-500');
+                    }
+                }, 1000);
+            }
+            
+            startPresentationBtn.addEventListener('click', () => {
+                startOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    startOverlay.style.display = 'none';
+                }, 700);
+
+                navigationControls.style.display = 'flex';
+                timerDisplay.style.display = 'block';
+                
+                const fourMinutes = 60 * 4;
+                startTimer(fourMinutes, timerDisplay);
+                
+                updateSlide(0);
             });
 
-            prevBtn.disabled = currentSlide === 0;
-            nextBtn.disabled = currentSlide === totalSlides - 1;
-
-            slideCounter.textContent = `${currentSlide + 1} / ${totalSlides}`;
-            
-            slides.forEach((slide, index) => {
-                if (index === currentSlide) {
-                    slide.classList.add('active');
-                    const animatedElements = slide.querySelectorAll('.fade-in-up');
-                    animatedElements.forEach(el => {
-                        el.style.animation = 'none';
-                        el.offsetHeight;
-                        el.style.animation = '';
-                    });
-                } else {
-                    slide.classList.remove('active');
+            nextBtn.addEventListener('click', () => {
+                if (currentSlide < totalSlides - 1) {
+                    updateSlide(currentSlide + 1);
                 }
             });
-        }
 
-        function startTimer(duration, display) {
-            let timer = duration, minutes, seconds;
-            const interval = setInterval(function () {
-                minutes = parseInt(timer / 60, 10);
-                seconds = parseInt(timer % 60, 10);
-
-                minutes = minutes < 10 ? "0" + minutes : minutes;
-                seconds = seconds < 10 ? "0" + seconds : seconds;
-
-                display.textContent = minutes + ":" + seconds;
-
-                if (--timer < 0) {
-                    clearInterval(interval);
-                    display.textContent = "Süre Doldu";
-                    display.classList.add('bg-red-500');
+            prevBtn.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    updateSlide(currentSlide - 1);
                 }
-            }, 1000);
-        }
-        
-        startPresentationBtn.addEventListener('click', () => {
-            startOverlay.style.opacity = '0';
-            setTimeout(() => {
-                startOverlay.style.display = 'none';
-            }, 500);
-
-            slideContainer.style.display = 'flex';
-            navigationControls.style.display = 'flex';
-            timerDisplay.style.display = 'block';
+            });
             
-            const fourMinutes = 60 * 4; // SÜRE 4 DAKİKAYA GÜNCELLENDİ
-            startTimer(fourMinutes, timerDisplay);
-            
-            updateSlide();
-        });
-
-
-        nextBtn.addEventListener('click', () => {
-            if (currentSlide < totalSlides - 1) {
-                currentSlide++;
-                updateSlide();
-            }
-        });
-
-        prevBtn.addEventListener('click', () => {
-            if (currentSlide > 0) {
-                currentSlide--;
-                updateSlide();
-            }
-        });
-        
-        document.addEventListener('keydown', (e) => {
-            if (startOverlay.style.display === 'none') {
-                 if (e.key === 'ArrowRight') {
-                    nextBtn.click();
-                } else if (e.key === 'ArrowLeft') {
-                    prevBtn.click();
+            document.addEventListener('keydown', (e) => {
+                if (startOverlay.style.display === 'none') {
+                     if (e.key === 'ArrowRight' || e.key === ' ') {
+                        nextBtn.click();
+                    } else if (e.key === 'ArrowLeft') {
+                        prevBtn.click();
+                    }
                 }
+            });
+
+            // Gallery Tab Logic
+            const webTabBtn = document.getElementById('web-tab-btn');
+            const mobileTabBtn = document.getElementById('mobile-tab-btn');
+            const webGallery = document.getElementById('web-gallery');
+            const mobileGallery = document.getElementById('mobile-gallery');
+
+            if(webTabBtn) {
+                webTabBtn.addEventListener('click', () => {
+                    webTabBtn.classList.add('active');
+                    mobileTabBtn.classList.remove('active');
+                    webGallery.classList.remove('hidden');
+                    mobileGallery.classList.add('hidden');
+                });
+            }
+            
+            if(mobileTabBtn) {
+                mobileTabBtn.addEventListener('click', () => {
+                    mobileTabBtn.classList.add('active');
+                    webTabBtn.classList.remove('active');
+                    mobileGallery.classList.remove('hidden');
+                    webGallery.classList.add('hidden');
+                });
             }
         });
-
-        window.addEventListener('resize', () => {
-             slideContainer.scrollTo({
-                left: currentSlide * window.innerWidth,
-                behavior: 'auto'
-            });
-        });
-
-        // Gallery Tab Logic
-        const webTabBtn = document.getElementById('web-tab-btn');
-        const mobileTabBtn = document.getElementById('mobile-tab-btn');
-        const webGallery = document.getElementById('web-gallery');
-        const mobileGallery = document.getElementById('mobile-gallery');
-
-        if(webTabBtn) {
-            webTabBtn.addEventListener('click', () => {
-                webTabBtn.classList.add('active');
-                mobileTabBtn.classList.remove('active');
-                webGallery.classList.remove('hidden');
-                mobileGallery.classList.add('hidden');
-            });
-        }
-        
-        if(mobileTabBtn) {
-            mobileTabBtn.addEventListener('click', () => {
-                mobileTabBtn.classList.add('active');
-                webTabBtn.classList.remove('active');
-                mobileGallery.classList.remove('hidden');
-                webGallery.classList.add('hidden');
-            });
-        }
-
     </script>
 
 </body>
