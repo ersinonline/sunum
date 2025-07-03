@@ -44,10 +44,12 @@
             position: absolute;
             top: 0;
             left: 0;
+            visibility: hidden;
         }
         .slide.active {
             opacity: 1;
             z-index: 10;
+            visibility: visible;
         }
         .gradient-text {
             background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent));
@@ -125,6 +127,8 @@
             padding: 0.5rem 1rem;
             border-radius: 9999px;
             transition: background-color 0.3s;
+            border: none;
+            cursor: pointer;
         }
         .nav-btn:hover:not(:disabled) {
             background-color: var(--primary-accent);
@@ -134,7 +138,7 @@
             cursor: not-allowed;
             opacity: 0.6;
         }
-
+        
         /* Galeri Stilleri */
         .tab-btn {
             transition: all 0.3s ease;
@@ -153,6 +157,24 @@
             width: 100%;
             height: 100%;
             border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* İlerleme Çubuğu Stilleri */
+        #progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background-color: rgba(30, 41, 59, 0.5);
+            z-index: 50;
+            display: none;
+        }
+        #progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent));
+            transition: width 0.3s ease-out;
         }
     </style>
 </head>
@@ -176,6 +198,11 @@
         </div>
     </div>
     
+    <!-- İlerleme Çubuğu -->
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+    </div>
+
     <!-- Geri Sayım Sayacı -->
     <div id="timer-display" class="fixed top-5 right-5 bg-black/50 backdrop-blur-sm text-white text-lg font-bold py-2 px-4 rounded-full shadow-xl z-40" style="display: none;">
         04:00
@@ -293,36 +320,42 @@
             </div>
         </div>
 
-        <!-- Slide 6: Ürün Galerisi -->
-        <div id="slide-6" class="slide">
-            <div class="w-full max-w-6xl mx-auto anim-stagger">
-                <h2 style="--delay: 0.2s" class="text-4xl md:text-5xl font-bold gradient-text mb-6 text-center">Ürünümüz: Web ve Mobil</h2>
-                <p style="--delay: 0.4s" class="text-lg text-text-dark mb-8 max-w-3xl text-center mx-auto">
-                    Tüm hizmetlere hem kapsamlı web platformumuzdan hem de her an yanınızda olan mobil uygulamamızdan erişin.
-                </p>
-                <div style="--delay: 0.6s" class="w-full bg-slate-900/50 p-4 sm:p-6 rounded-2xl shadow-2xl">
-                    <div class="flex justify-center border-b border-slate-700 mb-4">
-                        <button id="web-tab-btn" class="tab-btn active text-lg font-bold">Web Arayüzü</button>
-                        <button id="mobile-tab-btn" class="tab-btn text-lg font-bold">Mobil Uygulama</button>
+        <!-- Slide 6: Ürün Galerisi (DÜZELTİLDİ) -->
+        <div id="slide-6" class="slide !items-stretch !justify-start !p-0">
+            <div class="w-full max-w-6xl mx-auto flex flex-col h-full anim-stagger">
+                <!-- Sabit Başlık Alanı -->
+                <div class="flex-shrink-0 text-center pt-12 sm:pt-16 px-4">
+                    <h2 style="--delay: 0.2s" class="text-4xl md:text-5xl font-bold gradient-text mb-4">Ürünümüz: Web ve Mobil</h2>
+                    <p style="--delay: 0.4s" class="text-lg text-text-dark mb-6 max-w-3xl mx-auto">
+                        Tüm hizmetlere hem kapsamlı web platformumuzdan hem de her an yanınızda olan mobil uygulamamızdan erişin.
+                    </p>
+                </div>
+                <!-- Kaydırılabilir İçerik Alanı -->
+                <div class="flex-grow overflow-y-auto px-4 pb-20">
+                    <div style="--delay: 0.6s" class="w-full max-w-5xl mx-auto bg-slate-900/50 p-4 sm:p-6 rounded-2xl shadow-2xl">
+                        <div class="flex justify-center border-b border-slate-700 mb-4">
+                            <button id="web-tab-btn" class="tab-btn active text-lg font-bold">Web Arayüzü</button>
+                            <button id="mobile-tab-btn" class="tab-btn text-lg font-bold">Mobil Uygulama</button>
+                        </div>
+                        <div id="web-gallery" class="gallery-panel">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <img src="https://github.com/ersinonline/sunum/blob/main/2.png?raw=true" alt="TeknoKapsül Web Arayüzü - Ana Sayfa" class="md:col-span-2 w-full h-auto rounded-lg">
+                                <img src="https://github.com/ersinonline/sunum/blob/main/3.png?raw=true" alt="TeknoKapsül Web Arayüzü - Hizmetler" class="w-full h-auto rounded-lg">
+                                <img src="https://github.com/ersinonline/sunum/blob/main/4.png?raw=true" alt="TeknoKapsül Web Arayüzü - Abonelik Takibi" class="w-full h-auto rounded-lg">
+                            </div>
+                        </div>
+                        <div id="mobile-gallery" class="gallery-panel hidden">
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                                <img src="https://github.com/ersinonline/sunum/blob/main/5.png?raw=true" alt="TeknoKapsül Mobil Uygulama - Ana Ekran" class="w-full h-auto rounded-lg">
+                                <img src="https://github.com/ersinonline/sunum/blob/main/6.png?raw=true" alt="TeknoKapsül Mobil Uygulama - Finans" class="w-full h-auto rounded-lg">
+                                <img src="https://github.com/ersinonline/sunum/blob/main/7.png?raw=true" alt="TeknoKapsül Mobil Uygulama - Hizmetler" class="w-full h-auto rounded-lg">
+                                <img src="https://github.com/ersinonline/sunum/blob/main/8.png?raw=true" alt="TeknoKapsül Mobil Uygulama - Oyunlar" class="w-full h-auto rounded-lg">
+                            </div>
+                        </div>
                     </div>
-                <div id="web-gallery" class="gallery-panel">
-                    <div class="gallery-grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <img src="/2.png" alt="[TeknoKapsül Web Arayüzü - Ana Sayfa]" class="md:col-span-2">
-                        <img src="/3.png" alt="[TeknoKapsül Web Arayüzü - Hizmetler]">
-                        <img src="/4.png" alt="[TeknoKapsül Web Arayüzü - Abonelik Takibi]">
-                    </div>
-                </div>
-                <div id="mobile-gallery" class="gallery-panel hidden">
-                    <div class="gallery-grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        <img src="/5.jpeg" alt="[TeknoKapsül Mobil Uygulama - Ana Ekran]">
-                        <img src="/6.jpeg" alt="[TeknoKapsül Mobil Uygulama - Finans]">
-                        <img src="/7.jpeg" alt="[TeknoKapsül Mobil Uygulama - Hizmetler]">
-                        <img src="/8.jpeg" alt="[TeknoKapsül Mobil Uygulama - Oyunlar]">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+                </div>
+            </div>
+        </div>
         
         <!-- Slide 7: Pazar Büyüklüğü -->
         <div id="slide-7" class="slide">
@@ -355,7 +388,7 @@
         <div id="slide-9" class="slide">
             <div class="w-full max-w-7xl mx-auto anim-stagger">
                 <div style="--delay: 0.2s" class="text-center">
-                    <img src="https://i.ibb.co/sW0T0rS/image-09648a.jpg" alt="[Tech Istanbul Logosu]" class="h-20 mx-auto mb-4">
+                    <img src="https://placehold.co/200x80/0f172a/f1f5f9?text=Partner+Logosu" alt="Partner Logosu" class="h-20 mx-auto mb-4">
                     <h2 class="text-4xl md:text-5xl font-bold gradient-text mb-4">Stratejik İş Birlikleri & Gelecek Vizyonu</h2>
                 </div>
                 <p style="--delay: 0.4s" class="text-lg text-text-dark my-6 max-w-3xl mx-auto text-center">
@@ -403,7 +436,7 @@
                 </h2>
                 <p style="--delay: 0.4s" class="text-xl text-text-dark mt-6">Tüm finansal ve gündelik yaşam hizmetlerinizi tek bir yerden yönetirken, yakında ekleyeceğimiz yapay zeka desteği ile size özel tavsiyeler sunan, hayatınızı proaktif olarak kolaylaştıran ilk kişisel asistanınız olacağız.</p>
                 <div style="--delay: 0.6s" class="pt-8">
-                     <img src="https://i.ibb.co/sW0T0rS/image-09648a.jpg" alt="[Tech Istanbul Logosu]" class="h-16 mx-auto mb-4 opacity-75">
+                     <img src="https://placehold.co/200x80/0f172a/f1f5f9?text=Partner+Logosu" alt="Partner Logosu" class="h-16 mx-auto mb-4 opacity-75">
                      <h3 class="text-3xl font-bold text-white">Teşekkürler & Sorular</h3>
                      <p class="text-gray-500 mt-4">bilgi@teknokapsul.com | teknokapsul.com</p>
                 </div>
@@ -413,11 +446,11 @@
     </div>
 
     <!-- Navigation -->
-    <div id="navigation-controls" class="fixed bottom-5 left-1/2 -translate-x-1/2 p-2 flex justify-between items-center bg-black/30 backdrop-blur-sm rounded-full z-30" style="display: none;">
+    <div id="navigation-controls" class="fixed bottom-5 left-1/2 -translate-x-1/2 p-2 flex justify-between items-center gap-4 bg-black/30 backdrop-blur-sm rounded-full z-30" style="display: none;">
         <button id="prevBtn" class="nav-btn">
             &larr; Geri
         </button>
-        <div id="slide-counter" class="text-sm text-text-dark mx-6">1 / 11</div>
+        <div id="slide-counter" class="text-sm text-text-dark mx-2">1 / 11</div>
         <button id="nextBtn" class="nav-btn">
             İleri &rarr;
         </button>
@@ -425,22 +458,45 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Elementleri seçme
             const slideContainer = document.getElementById('slide-container');
             const slides = document.querySelectorAll('.slide');
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
             const slideCounter = document.getElementById('slide-counter');
-            const totalSlides = slides.length;
-            let currentSlide = 0;
-            let isAnimating = false;
-
             const startOverlay = document.getElementById('start-overlay');
             const startPresentationBtn = document.getElementById('start-presentation-btn');
             const timerDisplay = document.getElementById('timer-display');
             const navigationControls = document.getElementById('navigation-controls');
+            const progressBar = document.getElementById('progress-bar');
+            const progressContainer = document.getElementById('progress-container');
+            
+            // Değişkenler
+            const totalSlides = slides.length;
+            let currentSlide = 0;
+            let isAnimating = false;
 
-            function updateSlide(newIndex) {
+            // Sunumu başlatan fonksiyon
+            function startPresentation() {
+                startOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    startOverlay.style.display = 'none';
+                }, 700);
+
+                navigationControls.style.display = 'flex';
+                timerDisplay.style.display = 'block';
+                progressContainer.style.display = 'block';
+                
+                const fourMinutes = 60 * 4;
+                startTimer(fourMinutes, timerDisplay);
+                
+                updateSlide(0, true); // İlk slaytı animasyonsuz göster
+            }
+
+            // Slaytları güncelleyen ana fonksiyon
+            function updateSlide(newIndex, isInitial = false) {
                 if (isAnimating) return;
+                if (newIndex < 0 || newIndex >= totalSlides) return;
                 isAnimating = true;
 
                 const oldSlide = slides[currentSlide];
@@ -449,33 +505,47 @@
                 // Yeni slaytı aktif et
                 newSlide.classList.add('active');
                 
-                // Animasyonları tetikle
-                const animatedElements = newSlide.querySelectorAll('.anim-stagger > *');
-                animatedElements.forEach(el => {
-                    const delay = el.style.getPropertyValue('--delay') || '0s';
-                    el.style.animation = 'none';
-                    el.offsetHeight; // Reflow
-                    el.style.animation = `fadeInUp 0.7s ${delay} ease-out forwards`;
-                });
+                // Yeni slaytın içindeki animasyonları tetikle
+                triggerSlideAnimations(newSlide);
                 
                 // Eski slaytı gizle
                 if (oldSlide !== newSlide) {
+                    const transitionDuration = isInitial ? 0 : 600;
                     setTimeout(() => {
                         oldSlide.classList.remove('active');
-                    }, 600); // Transition süresiyle eşleşmeli
+                    }, transitionDuration);
                 }
                 
                 currentSlide = newIndex;
-
-                prevBtn.disabled = currentSlide === 0;
-                nextBtn.disabled = currentSlide === totalSlides - 1;
-                slideCounter.textContent = `${currentSlide + 1} / ${totalSlides}`;
+                updateControls(); // Butonları ve sayacı güncelle
 
                 setTimeout(() => {
                     isAnimating = false;
-                }, 600);
+                }, isInitial ? 50 : 600);
             }
 
+            // Slayt içi animasyonları tetikler
+            function triggerSlideAnimations(slide) {
+                const animatedElements = slide.querySelectorAll('.anim-stagger > *');
+                animatedElements.forEach(el => {
+                    const delay = el.style.getPropertyValue('--delay') || '0s';
+                    el.style.animation = 'none';
+                    el.offsetHeight; // Tarayıcıyı reflow yapmaya zorla
+                    el.style.animation = `fadeInUp 0.7s ${delay} ease-out forwards`;
+                });
+            }
+
+            // Navigasyon kontrollerini ve ilerleme çubuğunu günceller
+            function updateControls() {
+                prevBtn.disabled = currentSlide === 0;
+                nextBtn.disabled = currentSlide === totalSlides - 1;
+                slideCounter.textContent = `${currentSlide + 1} / ${totalSlides}`;
+                
+                const progressPercentage = ((currentSlide + 1) / totalSlides) * 100;
+                if(progressBar) progressBar.style.width = `${progressPercentage}%`;
+            }
+
+            // Geri sayım sayacını başlatır
             function startTimer(duration, display) {
                 let timer = duration, minutes, seconds;
                 const interval = setInterval(() => {
@@ -495,59 +565,38 @@
                 }, 1000);
             }
             
-            startPresentationBtn.addEventListener('click', () => {
-                startOverlay.style.opacity = '0';
-                setTimeout(() => {
-                    startOverlay.style.display = 'none';
-                }, 700);
-
-                navigationControls.style.display = 'flex';
-                timerDisplay.style.display = 'block';
-                
-                const fourMinutes = 60 * 4;
-                startTimer(fourMinutes, timerDisplay);
-                
-                updateSlide(0);
-            });
-
-            nextBtn.addEventListener('click', () => {
-                if (currentSlide < totalSlides - 1) {
-                    updateSlide(currentSlide + 1);
-                }
-            });
-
-            prevBtn.addEventListener('click', () => {
-                if (currentSlide > 0) {
-                    updateSlide(currentSlide - 1);
-                }
-            });
+            // Olay dinleyicileri
+            startPresentationBtn.addEventListener('click', startPresentation);
+            nextBtn.addEventListener('click', () => updateSlide(currentSlide + 1));
+            prevBtn.addEventListener('click', () => updateSlide(currentSlide - 1));
             
             document.addEventListener('keydown', (e) => {
-                if (startOverlay.style.display === 'none') {
-                     if (e.key === 'ArrowRight' || e.key === ' ') {
-                        nextBtn.click();
-                    } else if (e.key === 'ArrowLeft') {
-                        prevBtn.click();
-                    }
+                if (startOverlay.style.display !== 'none') return;
+                
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    e.preventDefault(); 
+                    nextBtn.click();
+                } else if (e.key === 'ArrowLeft') {
+                    prevBtn.click();
                 }
             });
 
-            // Gallery Tab Logic
+            // Galeri Tab Logic
             const webTabBtn = document.getElementById('web-tab-btn');
             const mobileTabBtn = document.getElementById('mobile-tab-btn');
             const webGallery = document.getElementById('web-gallery');
             const mobileGallery = document.getElementById('mobile-gallery');
 
-            if(webTabBtn) {
+            function setupTabs() {
+                if(!webTabBtn || !mobileTabBtn) return;
+
                 webTabBtn.addEventListener('click', () => {
                     webTabBtn.classList.add('active');
                     mobileTabBtn.classList.remove('active');
                     webGallery.classList.remove('hidden');
                     mobileGallery.classList.add('hidden');
                 });
-            }
             
-            if(mobileTabBtn) {
                 mobileTabBtn.addEventListener('click', () => {
                     mobileTabBtn.classList.add('active');
                     webTabBtn.classList.remove('active');
@@ -555,6 +604,8 @@
                     webGallery.classList.add('hidden');
                 });
             }
+            
+            setupTabs();
         });
     </script>
 
