@@ -320,7 +320,7 @@
             </div>
         </div>
 
-        <!-- Slide 6: Ürün Galerisi (DÜZELTİLDİ) -->
+        <!-- Slide 6: Ürün Galerisi -->
         <div id="slide-6" class="slide !items-stretch !justify-start !p-0">
             <div class="w-full max-w-6xl mx-auto flex flex-col h-full anim-stagger">
                 <!-- Sabit Başlık Alanı -->
@@ -454,6 +454,15 @@
         <button id="nextBtn" class="nav-btn">
             İleri &rarr;
         </button>
+        <!-- YENİ: Tam Ekran Düğmesi -->
+        <button id="fullscreenBtn" class="nav-btn" title="Tam Ekran (F)">
+            <svg id="fullscreen-open-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1v4m0 0h-4m4-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 1v-4m0 0h-4m4 4l-5-5" />
+            </svg>
+            <svg id="fullscreen-close-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+            </svg>
+        </button>
     </div>
 
     <script>
@@ -470,9 +479,12 @@
             const navigationControls = document.getElementById('navigation-controls');
             const progressBar = document.getElementById('progress-bar');
             const progressContainer = document.getElementById('progress-container');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            const fullscreenOpenIcon = document.getElementById('fullscreen-open-icon');
+            const fullscreenCloseIcon = document.getElementById('fullscreen-close-icon');
             
             // Değişkenler
-            const totalSlides = slides.length;
+            let totalSlides = slides.length;
             let currentSlide = 0;
             let isAnimating = false;
 
@@ -502,13 +514,9 @@
                 const oldSlide = slides[currentSlide];
                 const newSlide = slides[newIndex];
 
-                // Yeni slaytı aktif et
                 newSlide.classList.add('active');
-                
-                // Yeni slaytın içindeki animasyonları tetikle
                 triggerSlideAnimations(newSlide);
                 
-                // Eski slaytı gizle
                 if (oldSlide !== newSlide) {
                     const transitionDuration = isInitial ? 0 : 600;
                     setTimeout(() => {
@@ -517,7 +525,7 @@
                 }
                 
                 currentSlide = newIndex;
-                updateControls(); // Butonları ve sayacı güncelle
+                updateControls();
 
                 setTimeout(() => {
                     isAnimating = false;
@@ -530,13 +538,14 @@
                 animatedElements.forEach(el => {
                     const delay = el.style.getPropertyValue('--delay') || '0s';
                     el.style.animation = 'none';
-                    el.offsetHeight; // Tarayıcıyı reflow yapmaya zorla
+                    el.offsetHeight; 
                     el.style.animation = `fadeInUp 0.7s ${delay} ease-out forwards`;
                 });
             }
 
             // Navigasyon kontrollerini ve ilerleme çubuğunu günceller
             function updateControls() {
+                totalSlides = document.querySelectorAll('.slide').length;
                 prevBtn.disabled = currentSlide === 0;
                 nextBtn.disabled = currentSlide === totalSlides - 1;
                 slideCounter.textContent = `${currentSlide + 1} / ${totalSlides}`;
@@ -564,11 +573,38 @@
                     }
                 }, 1000);
             }
+
+            // Tam ekran modunu açıp kapatır
+            function toggleFullScreen() {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => {
+                        // Bu ortamda izin verilmeyebilir, ancak hata mesajı göstermiyoruz.
+                        console.error(`Tam ekrana geçilemedi: ${err.message} (${err.name})`);
+                    });
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                }
+            }
+
+            // Tam ekran ikonunu günceller
+            function updateFullscreenIcon() {
+                if (document.fullscreenElement) {
+                    fullscreenOpenIcon.classList.add('hidden');
+                    fullscreenCloseIcon.classList.remove('hidden');
+                } else {
+                    fullscreenOpenIcon.classList.remove('hidden');
+                    fullscreenCloseIcon.classList.add('hidden');
+                }
+            }
             
             // Olay dinleyicileri
             startPresentationBtn.addEventListener('click', startPresentation);
             nextBtn.addEventListener('click', () => updateSlide(currentSlide + 1));
             prevBtn.addEventListener('click', () => updateSlide(currentSlide - 1));
+            fullscreenBtn.addEventListener('click', toggleFullScreen);
+            document.addEventListener('fullscreenchange', updateFullscreenIcon);
             
             document.addEventListener('keydown', (e) => {
                 if (startOverlay.style.display !== 'none') return;
@@ -578,6 +614,8 @@
                     nextBtn.click();
                 } else if (e.key === 'ArrowLeft') {
                     prevBtn.click();
+                } else if (e.key.toLowerCase() === 'f') {
+                    toggleFullScreen();
                 }
             });
 
@@ -606,8 +644,9 @@
             }
             
             setupTabs();
+            updateControls(); // Sayfa yüklendiğinde slayt sayısını doğru ayarla
         });
     </script>
 
 </body>
-</html>
+</ht
